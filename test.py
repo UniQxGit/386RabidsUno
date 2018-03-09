@@ -11,11 +11,40 @@ pygame.display.set_caption("Uno Rabbids")
 SURF_BACKGROUND = pygame.image.load("pic1.jpg").convert()
 screen.blit(SURF_BACKGROUND ,(0,0))
 
-#turn based logic
-whose_turn = 1; # 1 => player 1, 2 => player 2
 
-print ("starting game. Player 1 can press '1', Player 2 can press '2'")
-print ("player " + str(whose_turn) + " turn.")
+#test vals
+hand1 = ['1','2','3']
+hand2 = ['4','5','6']
+
+#player class
+class Player:
+	hand = []
+	
+
+	def __init__(self, name, hand):
+		self.hand = hand
+		self.name = name
+
+	def get_hand(self):
+		return self.hand
+
+	def get_name(self):
+		return self.name
+
+	def make_move(self, card_num):
+		print ("picked " + card_num)
+		self.hand.remove(card_num)
+
+#turn based logic
+player1 = Player("player 1", hand1)
+player2 = Player("player 2", hand2)
+
+
+whose_turn = player1; # 1 => player 1, 2 => player 2
+
+print ("player " + whose_turn.get_name() + "'s turn.")
+print ("player " + whose_turn.get_name() + "'s cards: ")
+print (whose_turn.get_hand())
 
 #game loop
 while (True):
@@ -28,13 +57,25 @@ while (True):
 			#print (event)
 
 		if (event.type == KEYDOWN):
-			if (whose_turn == 1 and event.key == ord('1')):
-				whose_turn = 2;
-				print("Turn ended. Now it's player " + str(whose_turn) + "'s turn")
-			elif (whose_turn == 2 and event.key == ord('2')):
-				whose_turn = 1;
-				print("Turn ended. Now it's player " + str(whose_turn) + "'s turn")
-				
+			char_pressed = chr(event.key)
+
+			#check if move is legal according to whose turn it is
+			if (char_pressed in whose_turn.get_hand()):
+				#make the move
+				whose_turn.make_move(char_pressed)
+				print (whose_turn.get_hand())
+
+				#change turn
+				if (whose_turn == player1):
+					whose_turn = player2
+				else:
+					whose_turn = player1
+
+				#prompt opposing player
+				print("Turn ended. Now it's player " + str(whose_turn.get_name()) + "'s turn")
+				print (whose_turn.get_hand())
+			else:
+				print("You don't have that card!")
 	pygame.display.update()
 
 
