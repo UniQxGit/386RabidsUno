@@ -1,14 +1,20 @@
 import pygame
 from pygame.locals import *
 from sys import exit
+from random import randint
 
 #setup
 pygame.init()
-screen = pygame.display.set_mode((640,480))
+
 pygame.display.set_caption("Uno Rabbids")
 
 #background image
-SURF_BACKGROUND = pygame.image.load("pic1.jpg").convert()
+image = pygame.image.load("background_" + str(randint(1,10)) + ".jpg")
+
+
+screen = pygame.display.set_mode(image.get_rect().size)
+
+SURF_BACKGROUND = image.convert()
 screen.blit(SURF_BACKGROUND ,(0,0))
 
 
