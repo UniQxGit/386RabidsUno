@@ -17,10 +17,35 @@ screen = pygame.display.set_mode(image.get_rect().size)
 SURF_BACKGROUND = image.convert()
 screen.blit(SURF_BACKGROUND ,(0,0))
 
+image = pygame.image.load("BorderOverlay.png")
+screen.blit(image ,(0,0))
+
 
 #test vals
 hand1 = ['1','2','3']
 hand2 = ['4','5','6']
+
+#card class
+class card:
+	color = 0
+	suite = 0
+	name = ""
+
+	def __init__(self, color, suite):
+		self.color = color
+		self.suite = suite
+		self.name = "card_" + str(color) + "_" + str(suite)
+    	#self.image = pygame.image.load("/Cards/" + self.name)
+    	
+
+	def get_color(self):
+		return self.color
+
+	def get_suite(self):
+		return self.suite
+
+	def get_name(self):
+		return self.suite
 
 #player class
 class Player:
