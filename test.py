@@ -13,6 +13,7 @@ image = pygame.image.load("background_" + str(randint(1,10)) + ".jpg")
 
 
 screen = pygame.display.set_mode(image.get_rect().size)
+w, h = pygame.display.get_surface().get_size()
 
 SURF_BACKGROUND = image.convert()
 screen.blit(SURF_BACKGROUND ,(0,0))
@@ -20,13 +21,11 @@ screen.blit(SURF_BACKGROUND ,(0,0))
 image = pygame.image.load("BorderOverlay.png")
 screen.blit(image ,(0,0))
 
-
-#test vals
-hand1 = ['1','2','3']
-hand2 = ['4','5','6']
+image = pygame.image.load("Deck_1.png")
+screen.blit(image ,(w * .05,h * .3))
 
 #card class
-class card:
+class Card:
 	color = 0
 	suite = 0
 	name = ""
@@ -35,8 +34,8 @@ class card:
 		self.color = color
 		self.suite = suite
 		self.name = "card_" + str(color) + "_" + str(suite)
-    	#self.image = pygame.image.load("/Cards/" + self.name)
-    	
+		self.image = None
+		self.rect = None
 
 	def get_color(self):
 		return self.color
@@ -47,14 +46,52 @@ class card:
 	def get_name(self):
 		return self.suite
 
+	def is_inside(self):
+		#check if recieving rect is inside
+		return false
+
+
+deck = []
+for i in range(1,5):
+	for j in range(1,10):
+		print("Created Card: " + Card(i,j).name)
+		deck.append(Card(i,j));
+		deck.append(Card(i,j));
+
 #player class
 class Player:
 	hand = []
-	
+	cardCount = 0;	
 
-	def __init__(self, name, hand):
-		self.hand = hand
+	def __init__(self, name, isMain):
 		self.name = name
+		self.isMain = isMain;
+
+	def redraw_hand(self):
+		startx = .2
+		starty = .75
+		interval = (.5) / (len(self.hand))
+		for i in range(len(self.hand)):
+			self.hand[i].rect.center = (w * startx,h * starty)
+			screen.blit(self.hand[i].image, (w * startx,h * starty))
+			startx += interval
+
+	def draw_card(self,count):
+		for i in range(count):
+			self.hand.append(deck[i])
+			deck[i].image = pygame.image.load("Cards/" + deck[i].name + ".png")
+			deck[i].rect = deck[i].image.get_rect()
+			deck.remove(deck[i])
+		self.redraw_hand()
+		# image = pygame.image.load("Cards/card_3_4.png")
+		# screen.blit(image ,(w*.35,h*.75))
+		# image = pygame.image.load("Cards/card_2_6.png")
+		# screen.blit(image ,(w*.45,h*.75))
+		# image = pygame.image.load("Cards/card_1_8.png")
+		# screen.blit(image ,(w*.55,h*.75))
+		# image = pygame.image.load("Cards/card_1_8.png")
+		# screen.blit(image ,(w*.65,h*.75))
+
 
 	def get_hand(self):
 		return self.hand
@@ -66,9 +103,16 @@ class Player:
 		print ("picked " + card_num)
 		self.hand.remove(card_num)
 
+
+
+
+#test vals
+
 #turn based logic
-player1 = Player("player 1", hand1)
-player2 = Player("player 2", hand2)
+player1 = Player("player 1", True)
+player1.draw_card(5)
+player1.draw_card(1)
+player2 = Player("player 2", False)
 
 
 whose_turn = player1; # 1 => player 1, 2 => player 2
