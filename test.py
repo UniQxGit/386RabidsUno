@@ -23,6 +23,8 @@ deckImage4 = pygame.image.load("Deck_4.png").convert_alpha()
 
 overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
 
+pygame.mixer.music.load("Music/music_2.mp4")
+pygame.mixer.music.play(-1)
 
 def MAX(left=0,right=0):
 	return left if (left>right) else right
