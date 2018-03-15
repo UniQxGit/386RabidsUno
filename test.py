@@ -137,6 +137,15 @@ class Player:
 				currentCard.rotation = randint(90,270)
 				
 				print ("You played: " + currentCard.name);
+
+				if currentCard.name == "wildcard":
+					currentCard.change_type(randint(1,5),randint(1,10))
+				elif currentCard.name == "special_1":
+					self.draw_card(2)
+					print("Special!!! Opponent Draws 2 cards!")
+				elif currentCard.name == "special_2":
+					self.draw_card(4)
+					print("Special!!! Opponent Draws 4 cards!")
 				pile.append(currentCard)
 				self.hand.remove(currentCard)
 
