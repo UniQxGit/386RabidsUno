@@ -16,11 +16,13 @@ w, h = pygame.display.get_surface().get_size()
 
 SURF_BACKGROUND = image.convert()
 
+deckImage1 = pygame.image.load("Deck_1.png").convert_alpha()
+deckImage2 = pygame.image.load("Deck_2.png").convert_alpha()
+deckImage3 = pygame.image.load("Deck_3.png").convert_alpha()
+deckImage4 = pygame.image.load("Deck_4.png").convert_alpha()
 
 overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
 
-
-image = pygame.image.load("Deck_1.png").convert_alpha()
 
 def MAX(left=0,right=0):
 	return left if (left>right) else right
@@ -162,7 +164,16 @@ print (whose_turn.get_hand())
 while (True):
 	screen.blit(SURF_BACKGROUND ,(0,0))
 	screen.blit(overlay ,(0,0))
-	screen.blit(image ,(w * .05,h * .3))
+
+	if len(deck) > 60:
+		screen.blit(deckImage1 ,(w * .05,h * .3))
+	elif len(deck) > 50:
+		screen.blit(deckImage2 ,(w * .05,h * .3))
+	elif len(deck) > 40:
+		screen.blit(deckImage3 ,(w * .05,h * .3))
+	elif len(deck) > 0:
+		screen.blit(deckImage4 ,(w * .05,h * .3))
+
 
 	for event in pygame.event.get():
 		if (event.type == QUIT): #pressing 'x' on the window
@@ -210,7 +221,6 @@ while (True):
 	for i in range(len(pile)):
 		rotated = pygame.transform.rotate(pile[i].image,pile[i].rotation)
 		screen.blit(rotated, (w * .4,h * .3))
-		print ("CurrentCard: " + currentCard.name);
 	player1.redraw_hand()
 	pygame.display.update()
 
