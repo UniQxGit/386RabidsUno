@@ -74,9 +74,14 @@ for i in range(1,5):
 		deck.append(Card(i,j,None));
 		deck.append(Card(i,j,None));
 
+#set a standard card to the center.
+currentCard = deck[randint(0,len(deck))]
+currentCard.rotation = randint(180,270)
+pile.append(currentCard)
+deck.remove(currentCard)
+
 
 #append special cards to the deck.
-
 #2 of each +x card for each color.
 for i in range(1,5):
 	for j in range(1,3):
@@ -98,10 +103,7 @@ print("DECKLIST: ")
 for i in range(len(deck)):
 	print("Card" + str(i) + ": " +deck[i].name)
 
-currentCard = deck[randint(0,len(deck))]
-currentCard.rotation = randint(180,270)
-pile.append(currentCard)
-deck.remove(currentCard)
+
 
 #player class
 class Player:
