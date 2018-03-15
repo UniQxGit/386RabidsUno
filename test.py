@@ -32,7 +32,7 @@ class Card:
 	suite = 0
 	name = ""
 	image_back = None
-
+	rotation = 0
 	def __init__(self, color, suite):
 		self.color = color
 		self.suite = suite
@@ -65,6 +65,8 @@ for i in range(1,5):
 		deck.append(Card(i,j));
 
 currentCard = deck[randint(0,len(deck))]
+currentCard.rotation = randint(180,270)
+pile.append(currentCard)
 deck.remove(currentCard)
 
 #player class
@@ -96,6 +98,8 @@ class Player:
 			if self.hand[i].rect.collidepoint(x, y):
 				global currentCard 
 				currentCard = self.hand[i]
+				currentCard.rotation = randint(90,270)
+				
 				print ("You played: " + currentCard.name);
 				pile.append(currentCard)
 				self.hand.remove(currentCard)
@@ -202,8 +206,11 @@ while (True):
 			# 	print (whose_turn.get_hand())
 			# else:
 			# 	print("You don't have that card!")
-	screen.blit(currentCard.image, (w * .4,h * .4))
-	print ("CurrentCard: " + currentCard.name);
+
+	for i in range(len(pile)):
+		rotated = pygame.transform.rotate(pile[i].image,pile[i].rotation)
+		screen.blit(rotated, (w * .4,h * .3))
+		print ("CurrentCard: " + currentCard.name);
 	player1.redraw_hand()
 	pygame.display.update()
 
