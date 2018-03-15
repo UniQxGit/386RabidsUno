@@ -31,6 +31,7 @@ class Card:
 	color = 0
 	suite = 0
 	name = ""
+	image_back = None
 
 	def __init__(self, color, suite):
 		self.color = color
@@ -65,9 +66,24 @@ class Player:
 	hand = []
 	cardCount = 0;	
 
-	def __init__(self, name, isMain):
+	def __init__(self, name, isHidden):
 		self.name = name
-		self.isMain = isMain;
+		self.isHidden = isHidden;
+
+	def check_hover(self,x,y):
+		#print ("hovering");
+		found = False
+		for i in reversed(range(len(self.hand))):
+			if x > self.hand[i].rect.x and (x<self.hand[i].rect.x+self.hand[i].image.get_width()):
+			    x_inside = True
+			else: x_inside = False
+			if y > self.hand[i].rect.y and (y<self.hand[i].rect.y+self.hand[i].image.get_height()):
+			    y_inside = True
+			else: y_inside = False
+			if x_inside and y_inside and found == False:
+				found = True
+				self.hand[i].rect.y = h * .55
+			else: self.hand[i].rect.y = h * .75
 
 	def redraw_hand(self):
 		minx = .23
@@ -76,13 +92,13 @@ class Player:
 		startx = .4
 		interval = .09;#(.5) / (MAX(len(self.hand),1))
 		if(interval * (len(self.hand)-1) > (maxx-minx)):
-			interval *= (maxx-minx) / interval * (len(self.hand)-1)
+			interval *= (maxx-minx) / (interval * (len(self.hand)-1))
 		startx -= (interval/2) * (len(self.hand)-1);
 		for i in range(len(self.hand)):
-			self.hand[i].rect.center = (w * startx,h * starty)
-			screen.blit(self.hand[i].image, (w * startx,h * starty))
+			self.hand[i].rect.x = w * startx
+			screen.blit(self.hand[i].image, (w * startx,self.hand[i].rect.y))
 			startx += interval
-			pygame.display.update()
+			#pygame.display.update()
 		
 
 	def draw_card(self,count):
@@ -90,17 +106,9 @@ class Player:
 			self.hand.append(deck[i])
 			deck[i].image = pygame.image.load("Cards/" + deck[i].name + ".png")
 			deck[i].rect = deck[i].image.get_rect()
-			#screen.blit(self.hand[i].image, (w * .5,h * .75))
+			deck[i].rect.y = h * .75
 			deck.remove(deck[i])
-		#self.redraw_hand()
-		# image = pygame.image.load("Cards/card_3_4.png")
-		# screen.blit(image ,(w*.35,h*.75))
-		# image = pygame.image.load("Cards/card_2_6.png")
-		# screen.blit(image ,(w*.45,h*.75))
-		# image = pygame.image.load("Cards/card_1_8.png")
-		# screen.blit(image ,(w*.55,h*.75))
-		# image = pygame.image.load("Cards/card_1_8.png")
-		# screen.blit(image ,(w*.65,h*.75))
+			self.redraw_hand()
 
 
 	def get_hand(self):
@@ -119,9 +127,9 @@ class Player:
 #test vals
 
 #turn based logic
-player1 = Player("player 1", True)
-#player1.draw_card(5)
-player2 = Player("player 2", False)
+player1 = Player("player 1", False)
+player1.draw_card(5)
+player2 = Player("player 2", True)
 
 
 whose_turn = player1; # 1 => player 1, 2 => player 2
@@ -143,6 +151,9 @@ while (True):
 
 		#if (event.type != MOUSEMOTION):
 			#print (event)
+		if event.type == pygame.MOUSEMOTION:
+			mouse_posx, mouse_posy = pygame.mouse.get_pos()
+			player1.check_hover(mouse_posx,mouse_posy)
 
 		if (event.type == KEYDOWN):
 			char_pressed = chr(event.key)
@@ -152,22 +163,22 @@ while (True):
 				player1.draw_card(1);
 
 			#check if move is legal according to whose turn it is
-			if (char_pressed in whose_turn.get_hand()):
-				#make the move
-				whose_turn.make_move(char_pressed)
-				print (whose_turn.get_hand())
+			# if (char_pressed in whose_turn.get_hand()):
+			# 	#make the move
+			# 	whose_turn.make_move(char_pressed)
+			# 	print (whose_turn.get_hand())
 
-				#change turn
-				if (whose_turn == player1):
-					whose_turn = player2
-				else:
-					whose_turn = player1
+			# 	#change turn
+			# 	if (whose_turn == player1):
+			# 		whose_turn = player2
+			# 	else:
+			# 		whose_turn = player1
 
-				#prompt opposing player
-				print("Turn ended. Now it's player " + str(whose_turn.get_name()) + "'s turn")
-				print (whose_turn.get_hand())
-			else:
-				print("You don't have that card!")
+			# 	#prompt opposing player
+			# 	print("Turn ended. Now it's player " + str(whose_turn.get_name()) + "'s turn")
+			# 	print (whose_turn.get_hand())
+			# else:
+			# 	print("You don't have that card!")
 	player1.redraw_hand()
 	pygame.display.update()
 
