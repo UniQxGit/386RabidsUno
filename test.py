@@ -37,12 +37,26 @@ class Card:
 	name = ""
 	image_back = None
 	rotation = 0
-	def __init__(self, color, suite):
+	def __init__(self, color, suite, name):
+		self.color = color
+		self.suite = suite
+		if name is None:
+			self.name = "card_" + str(color) + "_" + str(suite)
+		else:
+			self.name = name
+		self.image = pygame.image.load("Cards/" + self.name + ".png")
+		self.rect = None
+
+	# def is_valid(self,left = Card,right):
+	# 	#if(left.card)
+	# 	return True;
+
+	def change_type(self,color,suite):
+		#TODO: Add Type changing functionality for the wildcard.
 		self.color = color
 		self.suite = suite
 		self.name = "card_" + str(color) + "_" + str(suite)
 		self.image = pygame.image.load("Cards/" + self.name + ".png")
-		self.rect = None
 
 	def get_color(self):
 		return self.color
@@ -50,23 +64,39 @@ class Card:
 	def get_suite(self):
 		return self.suite
 
-	def get_name(self):
-		return self.suite
-
-	def is_inside(self):
-		#check if recieving rect is inside
-		return false
-
 
 deck = []
 pile = []
 
-
+#populate deck with 2 copies of each standard card.
 for i in range(1,5):
 	for j in range(1,10):
-		print("Created Card: " + Card(i,j).name)
-		deck.append(Card(i,j));
-		deck.append(Card(i,j));
+		deck.append(Card(i,j,None));
+		deck.append(Card(i,j,None));
+
+
+#append special cards to the deck.
+
+#2 of each +x card for each color.
+for i in range(1,5):
+	for j in range(1,3):
+		deck.append(Card(i,-j,"special_" + str(j)))
+		deck.append(Card(i,-j,"special_" + str(j)))
+	#1 wildcard per color
+	deck.append(Card(-1,-3,"wildcard"))
+
+
+#shuffle deck.
+for i in range(len(deck)):
+	for j in range(0,5):
+		tmp = deck[i]
+		rnd = randint(18,36)
+		deck[i] = deck[(i+rnd)%len(deck)]
+		deck[(i+rnd)%len(deck)] = tmp
+
+print("DECKLIST: ")
+for i in range(len(deck)):
+	print("Card" + str(i) + ": " +deck[i].name)
 
 currentCard = deck[randint(0,len(deck))]
 currentCard.rotation = randint(180,270)
@@ -107,6 +137,9 @@ class Player:
 				print ("You played: " + currentCard.name);
 				pile.append(currentCard)
 				self.hand.remove(currentCard)
+
+				#TODO: if the clicked card is a +x card, make the opponent draw x cards.
+				#TODO: if the clicked card is a color change card, redraw the top card in pile to change color.
 				break
 
 	def redraw_hand(self):
@@ -122,7 +155,6 @@ class Player:
 			self.hand[i].rect.x = w * startx
 			screen.blit(self.hand[i].image, (w * startx,self.hand[i].rect.y))
 			startx += interval
-			#pygame.display.update()
 		
 
 	def draw_card(self,count):
@@ -130,10 +162,14 @@ class Player:
 			self.hand.append(deck[i])
 			deck[i].rect = deck[i].image.get_rect()
 			deck[i].rect.y = h * .75
+			print ("drew " + deck[i].name)
 			deck.remove(deck[i])
 			self.redraw_hand()
 
+			
 		print (str(len(deck)) + " cards in deck, " + str(len(self.hand)) + " cards in hand.")
+		#TODO: If no more cards in deck, and neither player has won, declare the game a tie.
+
 
 	def get_hand(self):
 		return self.hand
