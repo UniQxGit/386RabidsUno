@@ -37,7 +37,7 @@ class Card:
 		self.color = color
 		self.suite = suite
 		self.name = "card_" + str(color) + "_" + str(suite)
-		self.image = None
+		self.image = pygame.image.load("Cards/" + self.name + ".png")
 		self.rect = None
 
 	def get_color(self):
@@ -55,11 +55,17 @@ class Card:
 
 
 deck = []
+pile = []
+
+
 for i in range(1,5):
 	for j in range(1,10):
 		print("Created Card: " + Card(i,j).name)
 		deck.append(Card(i,j));
 		deck.append(Card(i,j));
+
+currentCard = deck[randint(0,len(deck))]
+deck.remove(currentCard)
 
 #player class
 class Player:
@@ -85,6 +91,16 @@ class Player:
 				self.hand[i].rect.y = h * .55
 			else: self.hand[i].rect.y = h * .75
 
+	def check_click(self,x,y):
+		for i in reversed(range(len(self.hand))):
+			if self.hand[i].rect.collidepoint(x, y):
+				global currentCard 
+				currentCard = self.hand[i]
+				print ("You played: " + currentCard.name);
+				pile.append(currentCard)
+				self.hand.remove(currentCard)
+				break
+
 	def redraw_hand(self):
 		minx = .23
 		maxx = .62
@@ -104,12 +120,12 @@ class Player:
 	def draw_card(self,count):
 		for i in range(count):
 			self.hand.append(deck[i])
-			deck[i].image = pygame.image.load("Cards/" + deck[i].name + ".png")
 			deck[i].rect = deck[i].image.get_rect()
 			deck[i].rect.y = h * .75
 			deck.remove(deck[i])
 			self.redraw_hand()
 
+		print (str(len(deck)) + " cards in deck, " + str(len(self.hand)) + " cards in hand.")
 
 	def get_hand(self):
 		return self.hand
@@ -151,14 +167,21 @@ while (True):
 
 		#if (event.type != MOUSEMOTION):
 			#print (event)
+
+
 		if event.type == pygame.MOUSEMOTION:
 			mouse_posx, mouse_posy = pygame.mouse.get_pos()
 			player1.check_hover(mouse_posx,mouse_posy)
+
+		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+			x, y = event.pos
+			player1.check_click(x,y)
 
 		if (event.type == KEYDOWN):
 			char_pressed = chr(event.key)
 			
 			key = pygame.key.get_pressed()
+			#if space is pressed, then draw a card. Temporary.
 			if (key[pygame.K_SPACE]):
 				player1.draw_card(1);
 
@@ -179,6 +202,8 @@ while (True):
 			# 	print (whose_turn.get_hand())
 			# else:
 			# 	print("You don't have that card!")
+	screen.blit(currentCard.image, (w * .4,h * .4))
+	print ("CurrentCard: " + currentCard.name);
 	player1.redraw_hand()
 	pygame.display.update()
 
