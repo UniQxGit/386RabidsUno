@@ -1,0 +1,100 @@
+
+What's up! This is a rar of all the ripped sound effects from Sonic Adventure 2.
+
+These took me just about a week to rip, organize and name. Most people that rip sound effects just leave
+the files as, with the file names as something like "synth_e0002_00045" usually, but I went the extra mile 
+to not only name almost every sound individually, but I also put sounds that got split up in the conversion 
+process back together. Some sounds are split up with two files so they can be looped, as in the first file 
+is the beginning of the sound overall and the second is the loopable part. Let's say theres a rumble sound 
+effect, so the first part would be called "rumble begin" and the second would be "rumble loop." I left ones
+like these split up but put some other ones back together.
+
+All the sounds for the game are stored in the .CSB file type, which is basically a folder acting as a file. Those
+needed to be unpacked and once done you get .AAX files. Those needed to be converted to .ADX and finally those
+.ADX files were converted to .WAVs.
+
+There were a lot of duplicate sounds between all the .CSB sound banks. Almost every level has at least one 
+sound bank that is the same between every level. For example, the sound for a GUN robot being destroyed can 
+be found in pretty much every level folder. And surprisingly, the .CSB sound bank containing a lot of the
+water/swimming sound effects can be found in many levels that don't actually contain any water.
+Another example of this is that each character's section of Cannon's Core was it's own separate folder of sound
+banks and almost every one contained the exact same sounds as each other, so I just threw them into one 'CANNON'S CORE'
+folder.
+
+Of course, individual duplicates didn't just come from duplicate sound banks.
+The way the sound effects for the cutscenes work is that each cutscene (for the most part) basically had it's own
+folder of sound banks. If you've played the game, you know that there are a lot of sounds that are used in many, 
+if not all cutscenes. Some examples would be the most commonly used footstep sound effect and a lot of explosions
+and ambience. There are also a lot of cutscenes that use sounds that are also just used in in-game play.
+I've deleted as many duplicates as I could. There are quite a few rumble and explosion sound effects that sound
+very similar but are slightly different, so it's hard to find them all. But I did the best job I could.
+
+I named most sound effects, but left a few handfuls unnamed. These are just stuff like the King Boom Boo or Chao voices
+that sound like gibberish to begin with. And there are actually quite a lot more Chao voices than I thought, so I 
+didn't want to try giving 150+ files of Chao voices their own unique names.
+Of course, even though I would say I know the game very well, I don't know where EVERY SINGLE sound effect is used,
+especially if they're used for more than one thing. Because of this, I gave a lot of sounds some somewhat general
+names if it wasn't something as simple as "Sonic Jump" or "Tails whistle." My goal for this was to have the entire
+folder easily searchable. So if you want an explosion sound or a beep sound, you can just search by keyword.
+
+I also organized everything into seven folders - Boss sounds, Chao sounds, Character sounds, enemy sounds,
+event (cutscene) sounds, Level sound, and Misc & Menu sounds. 
+There's also a small collection of voices - stuff that was used in the in-game play, like Kart Racing (both English
+and Japanese) and some other stuff like the 2P Chao voices.
+
+I had fun doing this, learning some more stuff about the game and how things are stored, and finally getting 
+my hands on these sound effects. I've wanted them for years, personally.
+I have a Sonic stop motion show called Sonic Stop Motion Adventures, and I can say for sure that I'll be
+putting a lot of these to good use.
+
+
+
+But it doesn't end there!
+Like I mentioned, I have my stop motion show, which you can find on my YouTube channel right here:
+https://www.youtube.com/user/piplupfan77
+
+In addition to everything I make, you can also find a new video of mine there with some more sounds and stuff
+from Sonic Adventure 2.
+In that video's description, you'll find links to:
+>this very sound effect package with everything I ripped from SA2 myself.
+>the sound effect package that contains a small collection of 258 sounds I manually recorded myself before
+ I knew how to rip them from the game. (This contains some looped sound effects and some Chao sounds actually sound
+ better quality, so I'm including it.)
+>a download for all of the English voices from the game (all of which were not ripped by me, they were uploaded
+ to The Sounds Resource by Chaofanatic, but none of them were named. I went through and named every line of dialogue
+ to be what the actual line is! Separated by character)
+
+>and finally there will be a link to download one big file containing everything listed above, with the bonus of the
+ music files I ripped from the game myself (you can find these songs anywhere, but I thought it'd be a cool addition
+ to include the files that are used to play these songs in the game.)
+
+The only thing left to be ripped from the game now are the Japanese voices, which I attempted to do but to no
+avail. They all came out as distorted, staticy messes.
+
+
+I wanted these to be as user friendly as possible, because I'm just as much of a user as anyone else out there
+that's wanted these. 
+
+
+Oh, and by all means use these! If you want to give credit, you can give it to Steven/Piplupfan77, but no credit
+is needed. Use them all to your heart's content!
+
+
+
+Finally, major shout-out and thank you to @SuperSonic16 on Twitter, who linked me a working version of the program
+I used to do all of this. Give him a follow!
+
+
+-Steven (Piplupfan77)
+|-/
+
+
+
+
+
+
+
+
+
+
+
