@@ -107,10 +107,7 @@ for i in range(len(deck)):
 
 #player class
 class Player:
-	hand = []
 	cardCount = 0;	
-	wildcard = None
-
 	def __init__(self, name, isHidden,sound_normal,sound_special1,sound_special2,sound_wildcard,sound_draw):
 		self.name = name
 		self.isHidden = isHidden;
@@ -119,6 +116,13 @@ class Player:
 		self.sound_special2 = pygame.mixer.Sound(sound_special2)
 		self.sound_wildcard = pygame.mixer.Sound(sound_wildcard)
 		self.sound_draw = pygame.mixer.Sound(sound_draw)
+		self.hand = []
+		self.wildcard = None
+		self.opponent = None
+		if isHidden:
+			self.cardY = -.13
+		else:
+			self.cardY = .75
 
 	def check_hover(self,x,y):
 		#print ("hovering");
@@ -133,7 +137,7 @@ class Player:
 			if x_inside and y_inside and found == False:
 				found = True
 				self.hand[i].rect.y = h * .55
-			else: self.hand[i].rect.y = h * .75
+			else: self.hand[i].rect.y = h * self.cardY
 
 	def check_click(self,x,y):
 		for i in reversed(range(len(self.hand))):
@@ -162,14 +166,14 @@ class Player:
 						pile.append(currentCard)
 						
 					elif currentCard.name == "special_1":
-						self.draw_card(2)
+						self.opponent.draw_card(2)
 						print("Special!!! Opponent Draws 2 cards!")
 						self.sound_special1.play()
 
 						self.hand.remove(currentCard)
 						pile.append(currentCard)
 					elif currentCard.name == "special_2":
-						self.draw_card(4)
+						self.opponent.draw_card(4)
 						self.sound_special2.play()
 						print("Special!!! Opponent Draws 4 cards!")
 
@@ -192,24 +196,30 @@ class Player:
 		if(interval * (len(self.hand)-1) > (maxx-minx)):
 			interval *= (maxx-minx) / (interval * (len(self.hand)-1))
 		startx -= (interval/2) * (len(self.hand)-1);
+		
 		for i in range(len(self.hand)):
 			self.hand[i].rect.x = w * startx
 			screen.blit(self.hand[i].image, (w * startx,self.hand[i].rect.y))
 			startx += interval
+
 		if self.wildcard != None:
-			screen.blit(self.wildcard.image, (w * 0,h * .75))
+			screen.blit(self.wildcard.image, (w * 0,h * self.cardY))
 
 	def draw_card(self,count):
 		for i in range(count):
-			self.hand.append(deck[i])
+			if self.isHidden:
+				deck[i].image = pygame.transform.rotate(deck[i].image,180)
+			
 			deck[i].rect = deck[i].image.get_rect()
-			deck[i].rect.y = h * .75
+			deck[i].rect.y = h * self.cardY
+			
 			print ("drew " + deck[i].name)
+			self.hand.append(deck[i])
 			deck.remove(deck[i])
 			self.redraw_hand()
 		if count < 5:
 			self.sound_draw.play()
-		print (str(len(deck)) + " cards in deck, " + str(len(self.hand)) + " cards in hand.")
+		print (str(len(deck)) + " cards in deck, " + self.name + " has " + str(len(self.hand)) + " cards in hand.")
 		#TODO: If no more cards in deck, and neither player has won, declare the game a tie.
 
 
@@ -235,6 +245,7 @@ player1 = Player("player 1", False,
 	"Sounds/AIWildcard.wav",
 	"Sounds/AIDraw.wav"
 	)
+
 # Regular player sounds.
 # "Sounds/normal.wav",
 # 	"Sounds/special1.flac",
@@ -243,6 +254,7 @@ player1 = Player("player 1", False,
 # 	"Sounds/drawCard.wav"
 
 player1.draw_card(5)
+
 player2 = Player("player 2", True,
 	#Sounds for AI.
 	"Sounds/normal.wav",
@@ -250,6 +262,10 @@ player2 = Player("player 2", True,
 	"Sounds/AISpecial2.wav",
 	"Sounds/AIWildcard.wav",
 	"Sounds/AIDraw.wav")
+player2.draw_card(5)
+
+player1.opponent = player2
+player2.opponent = player1
 
 #turn based logic
 whose_turn = player1; # 1 => player 1, 2 => player 2
@@ -321,6 +337,7 @@ while (True):
 		screen.blit(rotated, (w * .4,h * .3))
 
 	player1.redraw_hand()
+	player2.redraw_hand()
 	pygame.display.update()
 
 
