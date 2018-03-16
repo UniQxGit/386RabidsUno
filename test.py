@@ -139,43 +139,49 @@ class Player:
 		for i in reversed(range(len(self.hand))):
 			if self.hand[i].rect.collidepoint(x, y):
 				global currentCard 
-				currentCard = self.hand[i]
-				currentCard.rotation = randint(90,270)
-				
-				print ("You played: " + currentCard.name);
 
-				self.wildcard = None
-				if currentCard.name == "wildcard":
-					self.wildcard = currentCard;
-
-					self.hand.remove(currentCard)
-					pile.append(currentCard)
-
-					currentCard = Card(randint(1,4),randint(1,9),None)
-					self.sound_wildcard.play()
-
-					pile.append(currentCard)
+				if(self.hand[i].color == currentCard.color or
+					self.hand[i].suite == currentCard.suite or
+					self.hand[i].color == -1):
+					currentCard = self.hand[i]
+					currentCard.rotation = randint(90,270)
 					
-				elif currentCard.name == "special_1":
-					self.draw_card(2)
-					print("Special!!! Opponent Draws 2 cards!")
-					self.sound_special1.play()
-
-					self.hand.remove(currentCard)
-					pile.append(currentCard)
-				elif currentCard.name == "special_2":
-					self.draw_card(4)
-					self.sound_special2.play()
-					print("Special!!! Opponent Draws 4 cards!")
-
-					self.hand.remove(currentCard)
-					pile.append(currentCard)
-				else:
+					print ("You played: " + currentCard.name);
 					self.sound_normal.play()
-					self.hand.remove(currentCard)
-					pile.append(currentCard)
+					self.wildcard = None
 
-				break
+					if currentCard.name == "wildcard":
+						self.wildcard = currentCard;
+
+						self.hand.remove(currentCard)
+						pile.append(currentCard)
+
+						currentCard = Card(self.hand[randint(0,len(self.hand)-1)].color,randint(1,9),None)
+						self.sound_wildcard.play()
+
+						pile.append(currentCard)
+						
+					elif currentCard.name == "special_1":
+						self.draw_card(2)
+						print("Special!!! Opponent Draws 2 cards!")
+						self.sound_special1.play()
+
+						self.hand.remove(currentCard)
+						pile.append(currentCard)
+					elif currentCard.name == "special_2":
+						self.draw_card(4)
+						self.sound_special2.play()
+						print("Special!!! Opponent Draws 4 cards!")
+
+						self.hand.remove(currentCard)
+						pile.append(currentCard)
+					else:
+						
+						self.hand.remove(currentCard)
+						pile.append(currentCard)
+
+					break
+					
 
 	def redraw_hand(self):
 		minx = .23
@@ -229,13 +235,16 @@ player1 = Player("player 1", False,
 	"Sounds/AIWildcard.wav",
 	"Sounds/AIDraw.wav"
 	)
+# Regular player sounds.
 # "Sounds/normal.wav",
 # 	"Sounds/special1.flac",
 # 	"Sounds/special2.flac",
 # 	"Sounds/wildcard.wav",
 # 	"Sounds/drawCard.wav"
+
 player1.draw_card(5)
 player2 = Player("player 2", True,
+	#Sounds for AI.
 	"Sounds/normal.wav",
 	"Sounds/AISpecial1.wav",
 	"Sounds/AISpecial2.wav",
