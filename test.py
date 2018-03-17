@@ -508,6 +508,7 @@ while (True):
 			#if space is pressed, then draw a card. Temporary.
 			if (key[pygame.K_SPACE]):
 				player1.draw_card(1);
+				player1.opponent.lastCardTime = pygame.time.get_ticks()
 				whose_turn = player1.opponent
 
 			#check if move is legal according to whose turn it is
@@ -568,6 +569,7 @@ while (True):
 				break
 		if hasCard == False:
 			player2.draw_card(1)
+			player2.opponent.lastCardTime = pygame.time.get_ticks()
 			whose_turn = player2.opponent
 			player2.sound_draw.play()
 
