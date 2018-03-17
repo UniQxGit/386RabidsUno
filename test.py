@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from random import randint
+from time import time
 
 #setup
 pygame.init()
@@ -91,6 +92,7 @@ deck.remove(currentCard)
 for i in range(1,5):
 	deck.append(Card(i,-i,"special_" + str(i)))
 	deck.append(Card(i,-i,"special_" + str(i)))
+
 	#1 wildcard per color
 	deck.append(Card(-1,0,"wildcard"))
 
@@ -113,10 +115,11 @@ for i in range(len(deck)):
 
 #player class
 class Player:
-	def __init__(self, name, isHidden,sound_normal,sound_special1,sound_special2,sound_special3,sound_wildcard,sound_draw,sound_changeTurn,sound_bonus,sound_loss,sound_victory):
+	def __init__(self, name, isHidden,sound_normal,sound_invalid,sound_special1,sound_special2,sound_special3,sound_wildcard,sound_draw,sound_changeTurn,sound_bonus,sound_loss,sound_victory):
 		self.name = name
 		self.isHidden = isHidden;
 		self.sound_normal = effect = pygame.mixer.Sound(sound_normal)
+		self.sound_invalid = pygame.mixer.Sound(sound_invalid)
 		self.sound_special1 = pygame.mixer.Sound(sound_special1)
 		self.sound_special2 = pygame.mixer.Sound(sound_special2)
 		self.sound_special3 = pygame.mixer.Sound(sound_special3)
@@ -132,6 +135,7 @@ class Player:
 		self.cardCount = 0
 		self.bonus = 0
 		self.lastCardTime = pygame.time.get_ticks()
+		self.got_wildcard = False
 		if isHidden:
 			self.cardY = -.13
 		else:
@@ -180,30 +184,47 @@ class Player:
 						self.sound_wildcard.play()
 
 						print ("Wildcard created " + currentCard.name)
+
+						self.time_stop(700)
 						pile.append(currentCard)
 						# whose_turn = self.opponent
 						# self.opponent.sound_changeTurn.play()
 					elif currentCard.name == "special_1":
-						self.opponent.draw_card(2)
 						print("Special!!! Opponent Draws 2 cards!")
 						self.sound_special1.play()
 						self.opponent.sound_loss.play()
-
 						self.hand.remove(currentCard)
 						pile.append(currentCard)
+
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+
 						whose_turn = self.opponent
 						#self.opponent.sound_changeTurn.play()
 					elif currentCard.name == "special_2":
-						self.opponent.draw_card(4)
+						print("Special!!! Opponent Draws 4 cards!")
 						self.sound_special2.play()
 						self.opponent.sound_loss.play()
-						print("Special!!! Opponent Draws 4 cards!")
-
 						self.hand.remove(currentCard)
 						pile.append(currentCard)
+
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+						self.time_stop(700)
+						self.opponent.draw_card(1)
+
 						whose_turn = self.opponent
 						#self.opponent.sound_changeTurn.play()
 					elif currentCard.name == "special_3":
+						#opponent 
+						self.sound_special3.play()
+						self.opponent.sound_loss.play()
 						self.hand.remove(currentCard)
 						pile.append(currentCard)
 
@@ -211,9 +232,11 @@ class Player:
 							deck.append(self.hand[0])
 							self.hand.remove(self.hand[0])
 						SHUFFLEDECK()
-						self.draw_card(self.cardCount)
-						self.sound_special3.play()
-						self.opponent.sound_loss.play()
+						self.time_stop(700)
+						for i in range(self.cardCount):
+							self.draw_card(1)
+							self.time_stop(700)
+
 						whose_turn = self.opponent
 						#self.opponent.sound_changeTurn.play()
 					elif currentCard.name == "special_4":
@@ -242,6 +265,7 @@ class Player:
 
 
 					if self.bonus > 1 and len(self.hand) > 0:
+						self.got_wildcard = True
 						print ( "Drew wildcard!")
 						newCard = Card(-1,0,"wildcard")
 						if self.isHidden:
@@ -256,6 +280,22 @@ class Player:
 					break
 					
 					print ( whose_turn.name + "'s turn")
+
+				else:
+					print ("invalid card")
+					self.sound_invalid.play()
+
+	#pausing time so player can visualize whats happening
+	def time_stop(self, delay_val):
+
+		#update and display everything
+		reblit_all_cards()
+		pygame.display.update()
+
+		#stop time (also 'stop' the quickplay bonus timer)
+		pygame.time.wait(delay_val)
+		self.lastCardTime += delay_val
+
 
 	def redraw_hand(self):
 		minx = .23
@@ -273,7 +313,8 @@ class Player:
 			startx += interval
 
 		if self.wildcard != None:
-			screen.blit(self.hand[i].image_back if self.isHidden else self.wildcard.image, (w * 0,h * self.cardY))
+			screen.blit(self.wildcard.image_back if self.isHidden else self.wildcard.image, (w * 0,h * self.cardY))
+			#old: screen.blit(self.hand[i].image_back if self.isHidden else self.wildcard.image, (w * 0,h * self.cardY))
 
 	def draw_card(self,count):
 		for i in range(count):
@@ -293,7 +334,6 @@ class Player:
 		print (str(len(deck)) + " cards in deck, " + self.name + " has " + str(len(self.hand)) + " cards in hand.")
 		#TODO: If no more cards in deck, and neither player has won, declare the game a tie.
 
-
 	def get_hand(self):
 		return self.hand
 
@@ -307,10 +347,11 @@ class Player:
 
 
 
-
+#initialize players
 player1 = Player("player 1", False,
 	# Regular player sounds.
 	"Sounds/normal.wav",
+	"Sounds/invalid.wav",
 	"Sounds/special1.flac",
 	"Sounds/special2.flac",
 	"Sounds/special1.flac", #special 3 same as special 1
@@ -328,6 +369,7 @@ player1.draw_card(5)
 player2 = Player("player 2", True,
 	#Sounds for AI.
 	"Sounds/normal.wav",
+	"Sounds/invalid.wav",
 	"Sounds/AISpecial1.wav",
 	"Sounds/AISpecial2.wav",
 	"Sounds/AISpecial3.wav",
@@ -356,6 +398,7 @@ AIStartTime = -1
 
 #UI
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
+mouse_posx, mouse_posy = pygame.mouse.get_pos() 	#saves the mouse position since last movement
 
 #Draws a rectangle bar on screen that fills up before bonus time is up. accepts w and h floats (0.00 -> 1.00)
 def quickplay_bar_UI(percent_w, percent_h):
@@ -363,26 +406,57 @@ def quickplay_bar_UI(percent_w, percent_h):
 	pygame.draw.rect(screen, (0,0,0), (w*(percent_w - 0.020),h * (percent_h - 0.025),154,54))
 	time_limit = bonus_time_limit
 
-	#'filling' the bar
+	#changing the bar
 	bar_fill_color = (150,84,79)
-	if ((pygame.time.get_ticks() - player1.lastCardTime) >= time_limit):
-		quickplay_text = myfont.render('Too slow :(', False, (255, 255, 255))
-		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022), 150,50))
-		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
-	else:
-		time_left = round((time_limit - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
-		quickplay_text = myfont.render('Time left: ' + str(time_left), False, (255, 255, 255))
-		pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.022),(pygame.time.get_ticks() - player1.lastCardTime) * 150 / time_limit,50))
-		screen.blit(quickplay_text,((w * (percent_w - 0.008)),h * percent_h))
+
+	if (whose_turn == player1):
+		player1.got_wildcard = False
+		if ((pygame.time.get_ticks() - player1.lastCardTime) >= time_limit):
+			#player didnt make move in time
+			quickplay_text = myfont.render('Too slow :(', False, (255, 255, 255))
+			pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022), 150,50))
+			screen.blit(quickplay_text,(w * percent_w,h * percent_h))
+		else:
+			#fill up the bar
+			time_left = round((time_limit - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
+			quickplay_text = myfont.render('Time left: ' + str(time_left), False, (255, 255, 255))
+			pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.022),(pygame.time.get_ticks() - player1.lastCardTime) * 150 / time_limit,50))
+			screen.blit(quickplay_text,((w * (percent_w - 0.008)),h * percent_h))
+	elif (whose_turn == player2):
+		#show how many quickplays left to get bonus
+		if (player1.got_wildcard):
+			quickplay_text = myfont.render('got wildcard!', False, (255, 255, 255))
+			screen.blit(quickplay_text,(w * (percent_w - 0.010),h * percent_h))
+		else:
+			quickplay_text = myfont.render(str(2 - player1.bonus) + ' more!', False, (255, 255, 255))
+			pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022), 150,50))
+			screen.blit(quickplay_text,(w * (percent_w + 0.012),h * percent_h))
 
 #Draws text on screen, based on whose turn it is
+#also rechecks hovers
 def whose_turn_UI(percent_w, percent_h):
 	if (whose_turn == player1):
 		whose_turn_text = myfont.render('Your turn', False, (255, 255, 255))
+
+		#brings the cards of user back up if it was down
+		player1.check_hover(mouse_posx,mouse_posy)
 	elif (whose_turn == player2):
 		whose_turn_text = myfont.render('AI: hmmm...', False, (255, 255, 255))
 
+		#brings the cards of user back down if it was up
+		player1.check_hover(0,0)
+
+	#print it out
 	screen.blit(whose_turn_text,(w * percent_w,h * percent_h))
+
+#using this for when 'sleeping' the program a.k.a slowing the game down
+def reblit_all_cards():
+	for i in range(len(pile)):
+		rotated = pygame.transform.rotate(pile[i].image,pile[i].rotation)
+		screen.blit(rotated, (w * .4,h * .3))
+	player1.redraw_hand()
+	player2.redraw_hand()
+
 
 #game loop
 while (True):
@@ -418,7 +492,8 @@ while (True):
 			#print (event)
 
 
-		if event.type == pygame.MOUSEMOTION:
+		#dont let use hover their cards if its not their turn
+		if event.type == pygame.MOUSEMOTION and whose_turn == player1:
 			mouse_posx, mouse_posy = pygame.mouse.get_pos()
 			player1.check_hover(mouse_posx,mouse_posy)
 
