@@ -30,6 +30,10 @@ def MAX(left,right):
 	return left if (left>right) else right
 
 
+#game rules config
+bonus_time_limit = 4500
+
+
 #card class
 class Card:
 	color = 0
@@ -224,7 +228,7 @@ class Player:
 						if len(self.hand) > 0:
 							self.opponent.sound_changeTurn.play()
 
-					if pygame.time.get_ticks() - self.lastCardTime < 1500:
+					if pygame.time.get_ticks() - self.lastCardTime < bonus_time_limit:
 						self.bonus += 1
 					else:
 						self.bonus = 0
@@ -357,17 +361,18 @@ myfont = pygame.font.SysFont('Comic Sans MS', 30)
 def quickplay_bar_UI(percent_w, percent_h):
 	#background bar
 	pygame.draw.rect(screen, (0,0,0), (w*(percent_w - 0.020),h * (percent_h - 0.025),154,54))
+	time_limit = bonus_time_limit
 
 	#'filling' the bar
 	bar_fill_color = (150,84,79)
-	if ((pygame.time.get_ticks() - player1.lastCardTime) >= 1500):
+	if ((pygame.time.get_ticks() - player1.lastCardTime) >= time_limit):
 		quickplay_text = myfont.render('Too slow :(', False, (255, 255, 255))
-		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022),150,50))
+		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022), 150,50))
 		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
 	else:
-		time_left = round((1500 - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
+		time_left = round((time_limit - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
 		quickplay_text = myfont.render('Time left: ' + str(time_left), False, (255, 255, 255))
-		pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.022),(pygame.time.get_ticks() - player1.lastCardTime) * 0.10,50))
+		pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.022),(pygame.time.get_ticks() - player1.lastCardTime) * 150 / time_limit,50))
 		screen.blit(quickplay_text,((w * (percent_w - 0.008)),h * percent_h))
 
 #Draws text on screen, based on whose turn it is
