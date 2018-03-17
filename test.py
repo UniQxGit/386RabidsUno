@@ -24,7 +24,7 @@ deckImage4 = pygame.image.load("Deck_4.png").convert_alpha()
 overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
 
 pygame.mixer.music.load("Music/music_2.mp4")
-pygame.mixer.music.play(-1)
+#pygame.mixer.music.play(-1)
 
 def MAX(left,right):
 	return left if (left>right) else right
@@ -349,12 +349,49 @@ print (whose_turn.get_hand())
 winner = None
 yieldTime = randint(800,1500)
 AIStartTime = -1
+
+#UI
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
+
+#Draws a rectangle bar on screen that fills up before bonus time is up. accepts w and h floats (0.00 -> 1.00)
+def quickplay_bar_UI(percent_w, percent_h):
+	#background bar
+	pygame.draw.rect(screen, (0,0,0), (w*(percent_w - 0.020),h * (percent_h - 0.025),154,54))
+
+	#'filling' the bar
+	bar_fill_color = (150,84,79)
+	if ((pygame.time.get_ticks() - player1.lastCardTime) >= 1500):
+		quickplay_text = myfont.render('Too slow :(', False, (255, 255, 255))
+		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.022),150,50))
+		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
+	else:
+		time_left = round((1500 - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
+		quickplay_text = myfont.render('Time left: ' + str(time_left), False, (255, 255, 255))
+		pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.022),(pygame.time.get_ticks() - player1.lastCardTime) * 0.10,50))
+		screen.blit(quickplay_text,((w * (percent_w - 0.008)),h * percent_h))
+
+#Draws text on screen, based on whose turn it is
+def whose_turn_UI(percent_w, percent_h):
+	if (whose_turn == player1):
+		whose_turn_text = myfont.render('Your turn', False, (255, 255, 255))
+	elif (whose_turn == player2):
+		whose_turn_text = myfont.render('AI: hmmm...', False, (255, 255, 255))
+
+	screen.blit(whose_turn_text,(w * percent_w,h * percent_h))
+
 #game loop
 while (True):
 
 	#print("Time: " + str(pygame.time.get_ticks()))
 	screen.blit(SURF_BACKGROUND ,(0,0))
 	screen.blit(overlay ,(0,0))
+
+	#UI
+	whose_turn_UI(0.90, 0.01)	#whose turn it is
+	quickplay_bar_UI(0.89,0.07)	#quickplay bonus
+	
+
+	
 
 	if len(deck) > 60:
 		screen.blit(deckImage1 ,(w * .05,h * .3))
@@ -423,7 +460,6 @@ while (True):
 			winner.sound_victory.play()
 			winner.opponent.sound_loss.play()
 		
-
 	if whose_turn == player2 and AIStartTime == -1:
 		AIStartTime = pygame.time.get_ticks()
 
