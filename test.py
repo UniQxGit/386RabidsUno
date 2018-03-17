@@ -264,7 +264,7 @@ class Player:
 						print ( "Bonus: " + str(self.bonus))
 
 
-					if self.bonus > 1 and len(self.hand) > 0:
+					if self.bonus > 1 and len(self.hand) > 0 and self.wildcard == None:
 						self.got_wildcard = True
 						print ( "Drew wildcard!")
 						newCard = Card(-1,0,"wildcard")
@@ -409,7 +409,7 @@ def quickplay_bar_UI(percent_w, percent_h):
 	#changing the bar
 	bar_fill_color = (150,84,79)
 	if (winner != None):
-		quickplay_text = myfont.render('  WINS!', False, (255, 255, 255))
+		quickplay_text = myfont.render('   WINS!', False, (255, 255, 255))
 		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.035), 150,50))
 		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
 	else:
@@ -513,7 +513,8 @@ while (True):
 			key = pygame.key.get_pressed()
 			#if space is pressed, then draw a card. Temporary.
 			if (key[pygame.K_SPACE]):
-				player1.draw_card(1);
+				player1.draw_card(1)
+				player1.bonus = 0
 				player1.opponent.lastCardTime = pygame.time.get_ticks()
 				whose_turn = player1.opponent
 
@@ -578,6 +579,7 @@ while (True):
 			player2.opponent.lastCardTime = pygame.time.get_ticks()
 			whose_turn = player2.opponent
 			player2.sound_draw.play()
+			player2.bonus = 0
 
 	for i in range(len(pile)):
 		rotated = pygame.transform.rotate(pile[i].image,pile[i].rotation)
