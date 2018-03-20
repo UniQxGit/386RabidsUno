@@ -546,15 +546,17 @@ while (True):
 			player1.check_hover(mouse_posx,mouse_posy)
 
 		#pressing right click on the mouse
-		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
-			#for cards
-			x, y = event.pos
-			player1.check_click(x,y)
-
-			#for restart button
-			if (restart_UI_rect.collidepoint(mouse_posx, mouse_posy)):
-				print ("restart the game")
-				restart_game()
+		if event.type == pygame.MOUSEBUTTONDOWN:
+			if event.button == 3:
+				#for cards
+				x, y = event.pos
+				player1.check_click(x,y)
+			elif event.button == 1 and winner != None:
+				#for restart button
+				if (restart_UI_rect.collidepoint(mouse_posx, mouse_posy)):
+					winner = None
+					print ("restart the game")
+					restart_game()
 
 		if (event.type == KEYDOWN) and whose_turn == player1:
 			char_pressed = chr(event.key)
@@ -620,7 +622,8 @@ while (True):
 	#UI
 	quickplay_bar_UI(0.29,0.5)	#quickplay bonus
 	whose_turn_UI(0.29, 0.47)	#whose turn it is
-	restart_UI(0,0)				#restart the game
+	if winner != None:
+		restart_UI(.29,.54)				#restart the game
 
 	#update the screen
 	player1.redraw_hand()
