@@ -71,30 +71,10 @@ class Card:
 		return self.suite
 
 
+
+
 deck = []
 pile = []
-
-#populate deck with 2 copies of each standard card.
-for i in range(1,5):
-	for j in range(1,10):
-		deck.append(Card(i,j,None));
-		deck.append(Card(i,j,None));
-
-#set a standard card to the center.
-currentCard = deck[randint(0,len(deck)-1)]
-currentCard.rotation = randint(180,270)
-pile.append(currentCard)
-deck.remove(currentCard)
-
-
-#append special cards to the deck.
-#2 of each +x card for each color.
-for i in range(1,5):
-	deck.append(Card(i,-i,"special_" + str(i)))
-	deck.append(Card(i,-i,"special_" + str(i)))
-
-	#1 wildcard per color
-	deck.append(Card(-1,0,"wildcard"))
 
 def SHUFFLEDECK():
 	#shuffle deck.
@@ -107,7 +87,37 @@ def SHUFFLEDECK():
 			deck[i] = deck[(i+rnd)%len(deck)]
 			deck[(i+rnd)%len(deck)] = tmp
 
-SHUFFLEDECK()
+def cards_init():
+	global deck, pile
+	global currentCard
+
+	deck = []
+	pile = []
+
+	#populate deck with 2 copies of each standard card.
+	for i in range(1,5):
+		for j in range(1,10):
+			deck.append(Card(i,j,None));
+			deck.append(Card(i,j,None));
+
+	#set a standard card to the center.
+	currentCard = deck[randint(0,len(deck)-1)]
+	currentCard.rotation = randint(180,270)
+	pile.append(currentCard)
+	deck.remove(currentCard)	
+
+	#append special cards to the deck.
+	#2 of each +x card for each color.
+	for i in range(1,5):
+		deck.append(Card(i,-i,"special_" + str(i)))
+		deck.append(Card(i,-i,"special_" + str(i)))
+
+		#1 wildcard per color
+		deck.append(Card(-1,0,"wildcard"))
+
+	SHUFFLEDECK()
+
+cards_init()
 
 print("DECKLIST: ")
 for i in range(len(deck)):
@@ -140,6 +150,16 @@ class Player:
 			self.cardY = -.13
 		else:
 			self.cardY = .75
+
+	#for restarting the game
+	def restart_player(self):
+		self.hand = []
+		self.wildcard = None
+		self.cardCount = 0
+		self.bonus = 0
+		self.lastCardTime = pygame.time.get_ticks()
+		self.got_wildcard = False
+
 
 	def check_hover(self,x,y):
 		#print ("hovering");
@@ -466,6 +486,39 @@ def reblit_all_cards():
 	player2.redraw_hand()
 
 
+def restart_UI(percent_w, percent_h):
+	global mouse_posx, mouse_posy
+	global restart_UI_rect
+
+	size = (100, 50)
+	pos = (w * percent_w, h * percent_h)
+
+	restart_UI_button = pygame.image.load("restart.png")
+	restart_UI_button = pygame.transform.scale(restart_UI_button, size)
+
+	screen.blit(restart_UI_button, pos)
+	restart_UI_rect = pygame.Rect(pos, size)
+
+def restart_game():
+	global whose_turn, player1, player2
+
+	cards_init()			#reset deck and pile
+	whose_turn = player1	#start with player1
+
+	#reset player values (except for Player.opponent)
+	player1.restart_player()
+	player2.restart_player()
+
+	#visualize changes
+	reblit_all_cards()
+	pygame.display.update()
+	pygame.time.wait(20)
+
+	#draw 5 cards for each
+	player1.draw_card(5)
+	player2.draw_card(5)
+
+
 #game loop
 while (True):
 
@@ -506,6 +559,11 @@ while (True):
 		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
 			x, y = event.pos
 			player1.check_click(x,y)
+
+			#for restart button
+			if (restart_UI_rect.collidepoint(mouse_posx, mouse_posy)):
+				print ("restart the game")
+				restart_game()
 
 		if (event.type == KEYDOWN) and whose_turn == player1:
 			char_pressed = chr(event.key)
@@ -588,6 +646,7 @@ while (True):
 	#UI
 	quickplay_bar_UI(0.29,0.5)	#quickplay bonus
 	whose_turn_UI(0.29, 0.47)	#whose turn it is
+	restart_UI(0,0)
 
 	player1.redraw_hand()
 	player2.redraw_hand()
