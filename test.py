@@ -383,7 +383,7 @@ player1 = Player("PLAYER 1", False,
 	)
 
 
-player1.draw_card(5)
+player1.draw_card(1)
 
 player2 = Player("PLAYER 2", True,
 	#Sounds for AI.
@@ -500,8 +500,9 @@ def restart_UI(percent_w, percent_h):
 	restart_UI_rect = pygame.Rect(pos, size)
 
 def restart_game():
-	global whose_turn, player1, player2
+	global whose_turn, player1, player2, winner
 
+	winner = None			#reset winner (needed if game ended)
 	cards_init()			#reset deck and pile
 	whose_turn = player1	#start with player1
 
@@ -522,15 +523,11 @@ def restart_game():
 #game loop
 while (True):
 
-	#print("Time: " + str(pygame.time.get_ticks()))
+	#blit the arena
 	screen.blit(SURF_BACKGROUND ,(0,0))
 	screen.blit(overlay ,(0,0))
 
-	
-	
-
-	
-
+	#to visualize the deck decreasing
 	if len(deck) > 60:
 		screen.blit(deckImage1 ,(w * .05,h * .3))
 	elif len(deck) > 50:
@@ -545,14 +542,13 @@ while (True):
 			pygame.quit()
 			exit()
 
-		if(winner != None):
-			break
+		#if(winner != None):
+			#break
 		#if (event.type != MOUSEMOTION):
 			#print (event)
 
 
-		#dont let use hover their cards if its not their turn
-		if event.type == pygame.MOUSEMOTION:# and whose_turn == player1:
+		if event.type == pygame.MOUSEMOTION:
 			mouse_posx, mouse_posy = pygame.mouse.get_pos()
 			player1.check_hover(mouse_posx,mouse_posy)
 
@@ -646,29 +642,8 @@ while (True):
 	#UI
 	quickplay_bar_UI(0.29,0.5)	#quickplay bonus
 	whose_turn_UI(0.29, 0.47)	#whose turn it is
-	restart_UI(0,0)
+	restart_UI(0,0)				#restart the game
 
 	player1.redraw_hand()
 	player2.redraw_hand()
 	pygame.display.update()
-
-
-
-#unused stuff (might be useful later)
-
-#increase FPS
-'''
-clock = pygame.time.Clock()
-clock.tick(60)
-'''
-
-#change cursor image
-'''
-MOUSE_IMAGE = "cursor1.png"
-#surf_cursor = pygame.image.load(MOUSE_IMAGE).convert_alpha()
-inside game loop:
-x,y = pygame.mouse.get_pos()
-x -= surf_cursor.get_width() / 2
-y -= surf_cursor.get_height() / 2
-screen.blit(surf_cursor, (x,y))
-'''
