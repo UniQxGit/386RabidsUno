@@ -6,34 +6,30 @@ from time import time
 
 #setup
 pygame.init()
-
 pygame.display.set_caption("Uno Rabbids")
 
-#background image
-image = pygame.image.load("background_" + str(randint(1,10)) + ".jpg")
+#game rules config
+bonus_time_limit = 3500
 
+#background/overlay image
+image = pygame.image.load("background_" + str(randint(1,10)) + ".jpg")
 screen = pygame.display.set_mode(image.get_rect().size)
 w, h = pygame.display.get_surface().get_size()
-
 SURF_BACKGROUND = image.convert()
+overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
 
+#deck images
 deckImage1 = pygame.image.load("Deck_1.png").convert_alpha()
 deckImage2 = pygame.image.load("Deck_2.png").convert_alpha()
 deckImage3 = pygame.image.load("Deck_3.png").convert_alpha()
 deckImage4 = pygame.image.load("Deck_4.png").convert_alpha()
 
-overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
-
+#music
 pygame.mixer.music.load("Music/music_2.mp4")
-#pygame.mixer.music.play(-1)
+pygame.mixer.music.play(-1)
 
 def MAX(left,right):
 	return left if (left>right) else right
-
-
-#game rules config
-bonus_time_limit = 3500
-
 
 #card class
 class Card:
@@ -70,11 +66,6 @@ class Card:
 	def get_suite(self):
 		return self.suite
 
-
-
-
-deck = []
-pile = []
 
 def SHUFFLEDECK():
 	#shuffle deck.
@@ -116,12 +107,30 @@ def cards_init():
 		deck.append(Card(-1,0,"wildcard"))
 
 	SHUFFLEDECK()
+	print("DECKLIST: ")
+	for i in range(len(deck)):
+		print("Card" + str(i) + ": " +deck[i].name)
 
-cards_init()
+#restarts the game
+def restart_game():
+	global whose_turn, player1, player2, winner
 
-print("DECKLIST: ")
-for i in range(len(deck)):
-	print("Card" + str(i) + ": " +deck[i].name)
+	winner = None			#reset winner (needed if game ended)
+	cards_init()			#reset deck and pile
+	whose_turn = player1	#start with player1
+
+	#reset player values (except for Player.opponent)
+	player1.restart_player()
+	player2.restart_player()
+
+	#visualize changes
+	reblit_all_cards()
+	pygame.display.update()
+	pygame.time.wait(20)
+
+	#draw 5 cards for each
+	player1.draw_card(5)
+	player2.draw_card(5)
 
 #player class
 class Player:
@@ -191,6 +200,7 @@ class Player:
 					self.sound_normal.play()
 					self.wildcard = None
 					self.cardCount -= 1
+					print ("count: " + str(self.cardCount))
 					if currentCard.name == "wildcard":
 						self.wildcard = currentCard;
 
@@ -248,14 +258,17 @@ class Player:
 						self.hand.remove(currentCard)
 						pile.append(currentCard)
 
+						oldcardCount = self.cardCount
+
 						while (len(self.hand) > 0):
 							deck.append(self.hand[0])
 							self.hand.remove(self.hand[0])
 						SHUFFLEDECK()
-						
+
 						for i in range(self.cardCount):
 							self.draw_card(1)
 							
+						self.cardCount = oldcardCount
 
 						whose_turn = self.opponent
 						#self.opponent.sound_changeTurn.play()
@@ -363,59 +376,7 @@ class Player:
 		print ("picked " + card_num)
 		self.hand.remove(card_num)
 
-
-
-
-#initialize players
-player1 = Player("PLAYER 1", False,
-	# Regular player sounds.
-	"Sounds/normal.wav",
-	"Sounds/invalid.wav",
-	"Sounds/special1.flac",
-	"Sounds/special2.flac",
-	"Sounds/special1.flac", #special 3 same as special 1
-	"Sounds/wildcard.wav",
-	"Sounds/drawCard.wav",
-	"Sounds/drawCard.wav",
-	"Sounds/bonus.wav",
-	"Sounds/special1.flac", #Loss sound.
-	"Sounds/Victory.wav"
-	)
-
-
-player1.draw_card(1)
-
-player2 = Player("PLAYER 2", True,
-	#Sounds for AI.
-	"Sounds/normal.wav",
-	"Sounds/invalid.wav",
-	"Sounds/AISpecial1.wav",
-	"Sounds/AISpecial2.wav",
-	"Sounds/AISpecial3.wav",
-	"Sounds/AIWildcard.wav",
-	"Sounds/AIDraw.wav",
-	"Sounds/AITurn.wav",
-	"Sounds/AIBonus.wav",
-	"Sounds/AILoss.wav",
-	"Sounds/AIVictory.wav")
-
-player2.draw_card(5)
-
-player1.opponent = player2
-player2.opponent = player1
-
-#turn based logic
-whose_turn = player1; # 1 => player 1, 2 => player 2
-
-print ("player " + whose_turn.get_name() + "'s turn.")
-print ("player " + whose_turn.get_name() + "'s cards: ")
-print (whose_turn.get_hand())
-
-winner = None
-yieldTime = randint(800,1500)
-AIStartTime = -1
-
-#UI
+#-----------UI-----------
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 mouse_posx, mouse_posy = pygame.mouse.get_pos() 	#saves the mouse position since last movement
 
@@ -485,7 +446,7 @@ def reblit_all_cards():
 	player1.redraw_hand()
 	player2.redraw_hand()
 
-
+#UI box for restarting the game. access this with "restart_UI_rect"
 def restart_UI(percent_w, percent_h):
 	global mouse_posx, mouse_posy
 	global restart_UI_rect
@@ -499,26 +460,62 @@ def restart_UI(percent_w, percent_h):
 	screen.blit(restart_UI_button, pos)
 	restart_UI_rect = pygame.Rect(pos, size)
 
-def restart_game():
-	global whose_turn, player1, player2, winner
+#------------Set up the match------------
 
-	winner = None			#reset winner (needed if game ended)
-	cards_init()			#reset deck and pile
-	whose_turn = player1	#start with player1
+#initialize the deck and pile
+deck = []
+pile = []
+cards_init()
 
-	#reset player values (except for Player.opponent)
-	player1.restart_player()
-	player2.restart_player()
+#initialize players
+player1 = Player("PLAYER 1", False,
+	# Regular player sounds.
+	"Sounds/normal.wav",
+	"Sounds/invalid.wav",
+	"Sounds/special1.flac",
+	"Sounds/special2.flac",
+	"Sounds/special1.flac", #special 3 same as special 1
+	"Sounds/wildcard.wav",
+	"Sounds/drawCard.wav",
+	"Sounds/drawCard.wav",
+	"Sounds/bonus.wav",
+	"Sounds/special1.flac", #Loss sound.
+	"Sounds/Victory.wav"
+	)
 
-	#visualize changes
-	reblit_all_cards()
-	pygame.display.update()
-	pygame.time.wait(20)
 
-	#draw 5 cards for each
-	player1.draw_card(5)
-	player2.draw_card(5)
+player1.draw_card(5)
 
+player2 = Player("PLAYER 2", True,
+	#Sounds for AI.
+	"Sounds/normal.wav",
+	"Sounds/invalid.wav",
+	"Sounds/AISpecial1.wav",
+	"Sounds/AISpecial2.wav",
+	"Sounds/AISpecial3.wav",
+	"Sounds/AIWildcard.wav",
+	"Sounds/AIDraw.wav",
+	"Sounds/AITurn.wav",
+	"Sounds/AIBonus.wav",
+	"Sounds/AILoss.wav",
+	"Sounds/AIVictory.wav")
+
+player2.draw_card(5)
+
+#turn based logic
+player1.opponent = player2
+player2.opponent = player1
+whose_turn = player1;
+print ("player " + whose_turn.get_name() + "'s turn.")
+print ("player " + whose_turn.get_name() + "'s cards: ")
+print (whose_turn.get_hand())
+
+#game state
+winner = None
+
+#AI "thinking" delay
+yieldTime = randint(800,1500)
+AIStartTime = -1
 
 #game loop
 while (True):
@@ -538,21 +535,19 @@ while (True):
 		screen.blit(deckImage4 ,(w * .05,h * .3))
 
 	for event in pygame.event.get():
-		if (event.type == QUIT): #pressing 'x' on the window
+		#pressing 'x' on the window
+		if (event.type == QUIT):
 			pygame.quit()
 			exit()
 
-		#if(winner != None):
-			#break
-		#if (event.type != MOUSEMOTION):
-			#print (event)
-
-
+		#moving the mouse
 		if event.type == pygame.MOUSEMOTION:
 			mouse_posx, mouse_posy = pygame.mouse.get_pos()
 			player1.check_hover(mouse_posx,mouse_posy)
 
+		#pressing right click on the mouse
 		if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3:
+			#for cards
 			x, y = event.pos
 			player1.check_click(x,y)
 
@@ -572,24 +567,6 @@ while (True):
 				player1.opponent.lastCardTime = pygame.time.get_ticks()
 				whose_turn = player1.opponent
 
-			#check if move is legal according to whose turn it is
-			# if (char_pressed in whose_turn.get_hand()):
-			# 	#make the move
-			# 	whose_turn.make_move(char_pressed)
-			# 	print (whose_turn.get_hand())
-
-			# 	#change turn
-			# 	if (whose_turn == player1):
-			# 		whose_turn = player2
-			# 	else:
-			# 		whose_turn = player1
-
-			# 	#prompt opposing player
-			# 	print("Turn ended. Now it's player " + str(whose_turn.get_name()) + "'s turn")
-			# 	print (whose_turn.get_hand())
-			# else:
-			# 	print("You don't have that card!")
-
 	if winner == None:
 		if len(player1.hand) == 0:
 			print (player1.name + "wins!")
@@ -602,6 +579,7 @@ while (True):
 			winner.sound_victory.play()
 			winner.opponent.sound_loss.play()
 		
+	#AI(player2) logic. We want to delay the AI making a move "AIStartTime"
 	if whose_turn == player2 and AIStartTime == -1:
 		AIStartTime = pygame.time.get_ticks()
 
@@ -644,6 +622,9 @@ while (True):
 	whose_turn_UI(0.29, 0.47)	#whose turn it is
 	restart_UI(0,0)				#restart the game
 
+	#update the screen
 	player1.redraw_hand()
 	player2.redraw_hand()
 	pygame.display.update()
+
+
