@@ -1,3 +1,8 @@
+# Rabids Uno
+# Developers:
+# John Lee
+# Andre 
+
 import pygame
 from pygame.locals import *
 from sys import exit
