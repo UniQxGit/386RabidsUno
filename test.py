@@ -1,3 +1,9 @@
+# Authors: 
+# John Lee - hyunmail94@csu.fullerton.edu
+# Andre Victoria - andreappstuff@csu.fullerton.edu
+
+#This is essentially the Rabids Uno game in one file
+
 import pygame
 from pygame.locals import *
 from sys import exit
