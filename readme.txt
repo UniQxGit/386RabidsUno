@@ -25,7 +25,7 @@ Sounds - sounds / voice acting for the game.
 	   - player will also have it's own sounds based on what has happened
 
 How to run(no need to install):
-On the terminal: python3 test.py
+On the terminal: python3 RabidsUno.py
 				 game info is displayed on the terminal as you play for testing purposes
 
 How to close:
