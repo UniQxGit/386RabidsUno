@@ -31,7 +31,7 @@ deckImage3 = pygame.image.load("Deck_3.png").convert_alpha()
 deckImage4 = pygame.image.load("Deck_4.png").convert_alpha()
 
 #music
-pygame.mixer.music.load("Music/music_2.mp4")
+pygame.mixer.music.load("Music/music_" + str(randint(1,3)) + ".mp3")
 pygame.mixer.music.play(-1)
 
 def MAX(left,right):
