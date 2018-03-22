@@ -9,6 +9,7 @@ from pygame.locals import *
 from sys import exit
 from random import randint
 from time import time
+import math
 
 #setup
 pygame.init()
@@ -23,7 +24,8 @@ screen = pygame.display.set_mode(image.get_rect().size)
 w, h = pygame.display.get_surface().get_size()
 SURF_BACKGROUND = image.convert()
 overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
-
+instructions = pygame.image.load("GameInstructions.png").convert_alpha()
+howtoplay = pygame.image.load("HowToPlayButton.png").convert_alpha()
 #deck images
 deckImage1 = pygame.image.load("Deck_1.png").convert_alpha()
 deckImage2 = pygame.image.load("Deck_2.png").convert_alpha()
@@ -383,7 +385,7 @@ class Player:
 		self.hand.remove(card_num)
 
 #-----------UI-----------
-myfont = pygame.font.SysFont('Comic Sans MS', 30)
+myfont = pygame.font.SysFont('Comic Sans MS', math.floor((w/h) * 11))
 mouse_posx, mouse_posy = pygame.mouse.get_pos() 	#saves the mouse position since last movement
 
 #Draws a rectangle bar on screen that fills up before bonus time is up. accepts w and h floats (0.00 -> 1.00)
@@ -518,6 +520,8 @@ print (whose_turn.get_hand())
 
 #game state
 winner = None
+gameStart = False
+showInstructions = False
 
 #AI "thinking" delay
 yieldTime = randint(800,1500)
@@ -540,40 +544,48 @@ while (True):
 	elif len(deck) > 0:
 		screen.blit(deckImage4 ,(w * .05,h * .3))
 
+	screen.blit(howtoplay,(w * 0.7, h * 0.47))
+
 	for event in pygame.event.get():
 		#pressing 'x' on the window
 		if (event.type == QUIT):
 			pygame.quit()
 			exit()
 
-		#moving the mouse
-		if event.type == pygame.MOUSEMOTION:
-			mouse_posx, mouse_posy = pygame.mouse.get_pos()
-			player1.check_hover(mouse_posx,mouse_posy)
+		mouse_posx, mouse_posy = pygame.mouse.get_pos()
+		
+		if gameStart:
+			if howtoplay.get_rect().collidepoint(mouse_posx - w * .7, mouse_posy - h * .47):
+				showInstructions = True
+			else:
+				showInstructions = False
+			#moving the mouse
+			if event.type == pygame.MOUSEMOTION:
+				player1.check_hover(mouse_posx,mouse_posy)
 
-		#pressing right click on the mouse
-		if event.type == pygame.MOUSEBUTTONDOWN:
-			if event.button == 3:
-				#for cards
-				x, y = event.pos
-				player1.check_click(x,y)
-			elif event.button == 1 and winner != None:
-				#for restart button
-				if (restart_UI_rect.collidepoint(mouse_posx, mouse_posy)):
-					winner = None
-					print ("restart the game")
-					restart_game()
+			#pressing right click on the mouse
+			if event.type == pygame.MOUSEBUTTONDOWN:
+				if event.button == 3:
+					#for cards
+					x, y = event.pos
+					player1.check_click(x,y)
+				elif event.button == 1 and winner != None:
+					#for restart button
+					if (restart_UI_rect.collidepoint(mouse_posx, mouse_posy)):
+						winner = None
+						print ("restart the game")
+						restart_game()
 
-		if (event.type == KEYDOWN) and whose_turn == player1:
-			char_pressed = chr(event.key)
-			
-			key = pygame.key.get_pressed()
-			#if space is pressed, then draw a card. Temporary.
-			if (key[pygame.K_SPACE]):
-				player1.draw_card(1)
-				player1.bonus = 0
-				player1.opponent.lastCardTime = pygame.time.get_ticks()
-				whose_turn = player1.opponent
+			if (event.type == KEYDOWN) and whose_turn == player1:
+				char_pressed = chr(event.key)
+				
+				key = pygame.key.get_pressed()
+				#if space is pressed, then draw a card. Temporary.
+				if (key[pygame.K_SPACE]):
+					player1.draw_card(1)
+					player1.bonus = 0
+					player1.opponent.lastCardTime = pygame.time.get_ticks()
+					whose_turn = player1.opponent
 
 	if winner == None:
 		if len(player1.hand) == 0:
@@ -626,14 +638,29 @@ while (True):
 		screen.blit(rotated, (w * .45,h * .3))
 	
 	#UI
-	quickplay_bar_UI(0.29,0.5)	#quickplay bonus
-	whose_turn_UI(0.29, 0.47)	#whose turn it is
+	if gameStart:
+		quickplay_bar_UI(0.29,0.5)	#quickplay bonus
+		whose_turn_UI(0.29, 0.47)	#whose turn it is
+
 	if winner != None:
 		restart_UI(.29,.54)				#restart the game
 
 	#update the screen
 	player1.redraw_hand()
 	player2.redraw_hand()
+
+
+	if gameStart == False or showInstructions == True:
+		screen.blit(instructions ,(0,0))
+		for event in pygame.event.get():
+			if event.type == pygame.MOUSEBUTTONDOWN:
+					if event.button == 1:
+						if (instructions.get_rect().collidepoint(mouse_posx, mouse_posy)):
+							gameStart = True
+							player1.lastCardTime = pygame.time.get_ticks()
+	
 	pygame.display.update()
+
+
 
 
