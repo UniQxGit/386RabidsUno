@@ -5,7 +5,7 @@ John Lee - hyunmail94@csu.fullerton.edu
 Andre Victoria - andreappstuff@csu.fullerton.edu
 
 Files List:
-test.py - the game itself (must have pygame module before running)
+RabidsUno.py - the game itself (must have pygame module before running)
 background_x.jpg - background images for the game (not overlay), this is randomly picked
 BorderOverlay.jpg - static overlay (seen on the corners)
 Overlay1.jpg - to indicate it's player 1's turn
