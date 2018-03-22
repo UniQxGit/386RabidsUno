@@ -23,7 +23,8 @@ image = pygame.image.load("background_" + str(randint(1,10)) + ".jpg")
 screen = pygame.display.set_mode(image.get_rect().size)
 w, h = pygame.display.get_surface().get_size()
 SURF_BACKGROUND = image.convert()
-overlay = pygame.image.load("BorderOverlay.png").convert_alpha()
+overlay1 = pygame.image.load("Overlay1.png").convert_alpha()
+overlay2 = pygame.image.load("Overlay2.png").convert_alpha()
 instructions = pygame.image.load("GameInstructions.png").convert_alpha()
 howtoplay = pygame.image.load("HowToPlayButton.png").convert_alpha()
 #deck images
@@ -392,14 +393,14 @@ mouse_posx, mouse_posy = pygame.mouse.get_pos() 	#saves the mouse position since
 def quickplay_bar_UI(percent_w, percent_h):
 	global winner
 	#background bar
-	pygame.draw.rect(screen, (0,0,0), (w*(percent_w - 0.020),h * (percent_h - 0.038),154,54))
+	pygame.draw.rect(screen, (0,0,0), (w*(percent_w - 0.020),h * (percent_h - 0.018),154,54))
 	time_limit = bonus_time_limit
 
 	#changing the bar
 	bar_fill_color = (150,84,79)
 	if (winner != None):
 		quickplay_text = myfont.render('   WINS!', False, (255, 255, 255))
-		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.035), 150,50))
+		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.015), 150,50))
 		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
 	else:
 		if (whose_turn == player1):
@@ -407,13 +408,13 @@ def quickplay_bar_UI(percent_w, percent_h):
 			if ((pygame.time.get_ticks() - player1.lastCardTime) >= time_limit):
 				#player didnt make move in time
 				quickplay_text = myfont.render('Too slow :(', False, (255, 255, 255))
-				pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.035), 150,50))
+				pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.015), 150,50))
 				screen.blit(quickplay_text,(w * percent_w,h * percent_h))
 			else:
 				#fill up the bar
 				time_left = round((time_limit - (pygame.time.get_ticks() - player1.lastCardTime)) / 1000, 1)
 				quickplay_text = myfont.render('Time left: ' + str(time_left), False, (255, 255, 255))
-				pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.035),(pygame.time.get_ticks() - player1.lastCardTime) * 150 / time_limit,50))
+				pygame.draw.rect(screen, bar_fill_color, (w*(percent_w - 0.018),h * (percent_h - 0.015),(pygame.time.get_ticks() - player1.lastCardTime) * 150 / time_limit,50))
 				screen.blit(quickplay_text,((w * (percent_w - 0.008)),h * percent_h))
 		elif (whose_turn == player2):
 			#show how many quickplays left to get bonus
@@ -422,7 +423,7 @@ def quickplay_bar_UI(percent_w, percent_h):
 				screen.blit(quickplay_text,(w * (percent_w - 0.010),h * percent_h))
 			else:
 				quickplay_text = myfont.render(str(2 - player1.bonus) + ' more!', False, (255, 255, 255))
-				pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.035), 150,50))
+				pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.015), 150,50))
 				screen.blit(quickplay_text,(w * (percent_w + 0.012),h * percent_h))
 
 #Draws text on screen, based on whose turn it is
@@ -532,7 +533,7 @@ while (True):
 
 	#blit the arena
 	screen.blit(SURF_BACKGROUND ,(0,0))
-	screen.blit(overlay ,(0,0))
+	
 
 	#to visualize the deck decreasing
 	if len(deck) > 60:
@@ -639,16 +640,20 @@ while (True):
 	
 	#UI
 	if gameStart:
-		quickplay_bar_UI(0.29,0.5)	#quickplay bonus
-		whose_turn_UI(0.29, 0.47)	#whose turn it is
+		quickplay_bar_UI(0.29,0.45)	#quickplay bonus
+		#whose_turn_UI(0.29, 0.47)	#whose turn it is
 
 	if winner != None:
-		restart_UI(.29,.54)				#restart the game
+		restart_UI(.29,.51)				#restart the game
 
 	#update the screen
 	player1.redraw_hand()
 	player2.redraw_hand()
 
+	if whose_turn == player1:
+		screen.blit(overlay1 ,(0,0))
+	else:
+		screen.blit(overlay2 ,(0,0))
 
 	if gameStart == False or showInstructions == True:
 		screen.blit(instructions ,(0,0))
