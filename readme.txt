@@ -8,6 +8,9 @@ Files List:
 test.py - the game itself (must have pygame module before running)
 background_x.jpg - background images for the game (not overlay), this is randomly picked
 BorderOverlay.jpg - static overlay (seen on the corners)
+Overlay1.jpg - to indicate it's player 1's turn
+Overlay2.jpg - to indicate it's player 2's turn
+GameInstructions.png - game instructions!
 Deck_x.png - for the deck. The higher x is the more empty the deck is
 restart.png - simple restart button for the game
 
