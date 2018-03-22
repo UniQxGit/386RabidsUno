@@ -123,6 +123,10 @@ def cards_init():
 #restarts the game
 def restart_game():
 	global whose_turn, player1, player2, winner
+	global SURF_BACKGROUND
+	SURF_BACKGROUND = pygame.image.load("background_" + str(randint(1,10)) + ".jpg").convert()
+	pygame.mixer.music.load("Music/music_" + str(randint(1,3)) + ".mp3")
+	pygame.mixer.music.play(-1)
 
 	winner = None			#reset winner (needed if game ended)
 	cards_init()			#reset deck and pile
@@ -399,9 +403,11 @@ def quickplay_bar_UI(percent_w, percent_h):
 	#changing the bar
 	bar_fill_color = (150,84,79)
 	if (winner != None):
-		quickplay_text = myfont.render('   WINS!', False, (255, 255, 255))
+		winner_text = myfont.render(winner.name, False, (255, 255, 255))
+		quickplay_text = myfont.render('WINS!', False, (255, 255, 255))
 		pygame.draw.rect(screen, (25,25,25), (w*(percent_w - 0.018),h * (percent_h - 0.015), 150,50))
-		screen.blit(quickplay_text,(w * percent_w,h * percent_h))
+		screen.blit(winner_text,(w * percent_w,h * (percent_h-.015)))
+		screen.blit(quickplay_text,(w * (percent_w + .01),h * (percent_h+.015) ))
 	else:
 		if (whose_turn == player1):
 			player1.got_wildcard = False
