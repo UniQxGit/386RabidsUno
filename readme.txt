@@ -18,7 +18,7 @@ Folders:
 Cards - contains the images for different cards (normals, specials, and faced down state)
 	  -	for normals: Card_1_2.png means it has a color value = 1 and number value = 2
 
-Music - background music for the game (currently only using music_2.mp4)
+Music - background music for the game (randomizes between 3 songs music_x.mp4)
 
 Sounds - sounds / voice acting for the game.
 	   - AI has their own voice lines (ex. used special card, if it's their turn, if they won/lost)
@@ -32,7 +32,7 @@ How to close:
 simply close the window or CTRL + C on the terminal
 
 Features: 
-1. background is randomized to add some uniqueness to every match
+1. background image and music is randomized to add some uniqueness to every match
 2. added a bonus timer to reward quick decision making
 3. Bunnies
 
