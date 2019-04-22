@@ -4,7 +4,6 @@ Title: Rabids Uno
 
 Contact Info:
 John Lee - hyunmail94@csu.fullerton.edu
-
 Andre Victoria - andreappstuff@csu.fullerton.edu
 
 Files List:
