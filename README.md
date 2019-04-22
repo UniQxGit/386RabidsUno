@@ -7,6 +7,7 @@ John Lee - hyunmail94@csu.fullerton.edu
 Andre Victoria - andreappstuff@csu.fullerton.edu
 
 Files List:
+
 RabidsUno.py - the game itself (must have pygame module before running)
 
 background_x.jpg - background images for the game (not overlay), this is randomly picked
@@ -25,8 +26,9 @@ restart.png - simple restart button for the game
 
 
 Folders:
+
 Cards - contains the images for different cards (normals, specials, and faced down state)
-	  -	for normals: Card_1_2.png means it has a color value = 1 and number value = 2
+	- for normals: Card_1_2.png means it has a color value = 1 and number value = 2
 
 Music - background music for the game (randomizes between 3 songs music_x.mp4)
 
@@ -35,7 +37,9 @@ Sounds - sounds / voice acting for the game.
 	   - player will also have it's own sounds based on what has happened
 
 How to run:
+
 Please make sure pygame and all its dependencies are installed before running. 
+
 On the terminal: 
 ```
 python3 RabidsUno.py
