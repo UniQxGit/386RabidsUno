@@ -4,17 +4,26 @@ Title: Rabids Uno
 
 Contact Info:
 John Lee - hyunmail94@csu.fullerton.edu
+
 Andre Victoria - andreappstuff@csu.fullerton.edu
 
 Files List:
 RabidsUno.py - the game itself (must have pygame module before running)
+
 background_x.jpg - background images for the game (not overlay), this is randomly picked
+
 BorderOverlay.png - static overlay (seen on the corners)
+
 Overlay1.png - to indicate it's player 1's turn
+
 Overlay2.png - to indicate it's player 2's turn
+
 GameInstructions.png - game instructions!
+
 Deck_x.png - for the deck. The higher x is the more empty the deck is
+
 restart.png - simple restart button for the game
+
 
 Folders:
 Cards - contains the images for different cards (normals, specials, and faced down state)
